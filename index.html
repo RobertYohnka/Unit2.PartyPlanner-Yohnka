@@ -5,8 +5,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <link rel="stylesheet" href="./style.css">
+    <script defer src="./script.js"></script>
 </head>
 <body>
-    <script src="./script.js"></script>
+    <h1>Official Event List</h1>
+    <ul id="events"></ul>
+    <form id="addEvent">
+        <label>
+            Event Name
+            <input type="text" name="title" placeholder="Event Name" />
+        </label>
+        <!-- <label>
+            Event Date
+            <input type="date" name="date" placeholder="Event Date" />
+        </label> -->
+        <label>
+            Date
+            <input
+              id="date"
+              type="datetime-local"
+              name="date"
+              value="2024-01-01T08:30"
+            />
+        </label>
+        <!-- <label>
+            Event Time
+            <input type="text" name="time" placeholder="Start Time" />
+        </label> -->
+        <label>
+            Event Location
+            <input type="text" name="location" placeholder="Location" />
+        </label>
+        <label>
+            Event Description
+            <input type="text" name="description" placeholder="Description" />
+        </label>
+        <button>Add Event<button>
+    </form>
 </body>
 </html>

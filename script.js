@@ -6,10 +6,11 @@ const state = {
     parties: [],
 };
 
-const partyList = document.querySelector('#party');
+const partyList = document.querySelector('#partyList');
 const addPartyForm = document.querySelector('#addParty');
+
 addPartyForm.addEventListener('submit', addParty);
-// deleteButton.addEventListener('click', () => deleteParty(recipe.id));
+
 
 //Site should populate with a view of scheduled parties
 
@@ -17,7 +18,13 @@ async function getParties() {
     try {
         const response = await fetch(APIURL)
         const json = await response.json()
-        state.parties = json.data;
+        console.log(json);
+        if (json.success) {
+            state.parties = json.data;
+            renderParties();
+        } else {
+            console.error(json.error);
+        }
     } catch (error) {
         console.error(error);
     }
@@ -33,11 +40,11 @@ async function deleteParty(id) {
             method: 'DELETE',
         });
         if (!response.ok) {
-            throw new Error('Recipe could not be deleted.');
+            throw new Error('Party could not be deleted.');
         }
-
-        render();
-    }   catch (error) {
+        state.parties = state.parties.filter((party) => party.id !== id);
+        renderParties();
+    } catch (error) {
         console.log(error);
     }
 }
@@ -51,29 +58,31 @@ async function addParty(event) {
     event.preventDefault();
 
     await createParty(
-        addPartyForm.title.value,
+        addPartyForm.name.value,
         addPartyForm.date.value,
         addPartyForm.location.value,
         addPartyForm.description.value,
     );
+    addPartyForm.reset();
 }
 
 //Ask API to create a new event and rerender
-async function createParty(title, date, location, description) {
+async function createParty(name, date, location, description) {
     try {
         const isoDate = new Date(date).toISOString();
         const response = await fetch(APIURL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ title, date: isoDate, location, description })
+            body: JSON.stringify({ name, date: isoDate, location, description })
         });
         const data = await response.json();
         console.log(data);
         if (!response.ok) {
             throw new Error(`Failed to add event: ${data.message}`);
         }
-        render();
-    }   catch (error) {
+        state.parties.push(data.data);
+        renderParties();
+    } catch (error) {
         console.error(error);
     }
 }
@@ -85,25 +94,28 @@ async function createParty(title, date, location, description) {
 function renderParties() {
     if (!state.parties.length) {
         partyList.innerHTML = `<li>No events found.</li>`;
-    return;
+        return;
     }
+    console.log(state.parties);
     const partyCards = state.parties.map((party) => {
         const partyCard = document.createElement('li');
         partyCard.classList.add('event');
         partyCard.innerHTML = `
-        <h2>${party.title}</h2>
-        <p>${party.date}</p>
+        <h2>${party.name}</h2>
         <p>${party.location}</p>
         <p>${party.description}</p>
+        <p>${party.date}</p>
         `;
 
         const deleteButton = document.createElement('button');
         deleteButton.textContent = 'Delete Event';
         partyCard.append(deleteButton);
 
-        deleteButton.addEventListener('click', () => deleteParty(parties.id));
+        deleteButton.addEventListener('click', () => deleteParty(party.id));
 
         return partyCard;
     });
     partyList.replaceChildren(...partyCards);
 }
+
+getParties();

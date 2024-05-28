@@ -81,8 +81,6 @@ li button {
     border: none;
     padding: 8px 12px;
     border-radius: 3px;
-    cursor: pointer;
-    /* float: right; */
 }
 
 li button:hover {
